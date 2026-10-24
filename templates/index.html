@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital Management System | HMS</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ============ Login / Register ============ -->
+<div id="loginModal" class="modal active">
+  <div class="modal-content login-form">
+    <div class="form-header"><h2>⚕️ Hospital Management System</h2><p>Smart • Secure • Connected Healthcare</p></div>
+    <form id="loginForm" autocomplete="off">
+      <div class="form-group"><label>Username or Email</label><input id="username" placeholder="Enter username or email" required></div>
+      <div class="form-group"><label>Password</label><input type="password" id="password" placeholder="Enter password" required>
+        <label class="show-pw"><input type="checkbox" data-showpw="password"> Show password</label></div>
+      <div class="form-group"><label>Login as</label>
+        <select id="role" required><option value="">Select Role</option><option value="patient">Patient</option><option value="doctor">Doctor</option><option value="admin">Admin</option></select>
+      </div>
+      <p class="msg" id="loginMsg"></p>
+      <button class="btn btn-primary">Login</button>
+      <p class="signup-link">Don't have account? <a href="#" data-signup="register">Register here</a></p>
+    </form>
+  </div>
+</div>
+
+<div id="registerModal" class="modal">
+  <div class="modal-content login-form">
+    <div class="form-header"><h2>Create Account</h2><p>Join Our Hospital Network</p></div>
+    <form id="registerForm" autocomplete="off">
+      <div class="form-group"><label>Username</label><input id="regUsername" placeholder="Choose username (min 3 characters)" required></div>
+      <div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="name@gmail.com" required></div>
+      <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Min 8 characters" required><label class="show-pw"><input type="checkbox" data-showpw="regPassword"> Show password</label><div id="pwText" class="pw"></div></div>
+      <div class="form-group"><label>Date of Birth</label><input type="date" id="regDOB" required></div>
+      <p class="msg" id="regMsg"></p>
+      <button class="btn btn-primary">Register</button>
+      <p class="signup-link">Already have account? <a href="#" data-signup="login">Login here</a></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ App ============ -->
+<div id="appContainer" class="app-container" hidden>
+  <aside class="sidebar">
+    <div class="sidebar-header"><h3>⚕️ HMS</h3><p id="userDisplay">Welcome</p></div>
+    <nav class="sidebar-menu">
+      <a href="#" class="menu-item active" data-page="dashboard">📊 Dashboard</a>
+      <a href="#" class="menu-item" data-page="patients">👤 Patients</a>
+      <a href="#" class="menu-item" data-page="doctors">👨‍⚕️ Doctors</a>
+      <a href="#" class="menu-item" data-page="appointments">📅 Appointments</a>
+      <a href="#" class="menu-item" data-page="departments">🏢 Departments</a>
+      <a href="#" class="menu-item" data-page="records">📋 Medical Records</a>
+      <a href="#" class="menu-item" data-page="medicines">💊 Medicines</a>
+      <a href="#" class="menu-item" data-page="beds">🛏️ Beds</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-logout" id="logoutBtn">🚪 Logout</button></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-header">
+      <h1>Hospital Management System</h1>
+      <div class="user-info"><span id="currentUser">User</span><span id="currentRole">Role</span></div>
+    </header>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="page active">
+      <div class="dashboard-stats">
+        <div class="stat-card"><div class="stat-icon">👤</div><div><h3>Total Patients</h3><p id="totalPatients" class="stat-number">0</p></div></div>
+        <div class="stat-card"><div class="stat-icon">👨‍⚕️</div><div><h3>Total Doctors</h3><p id="totalDoctors" class="stat-number">0</p></div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div><h3>Appointments</h3><p id="totalAppointments" class="stat-number">0</p></div></div>
+        <div class="stat-card"><div class="stat-icon">🛏️</div><div><h3>Available Beds</h3><p id="availableBeds" class="stat-number">0</p></div></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="dashboard-section">
+          <h2>📊 Recent Appointments</h2>
+          <table id="recentAppointments"><thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="dashboard-section">
+          <h2>🩺 Quick Actions</h2>
+          <button class="btn btn-action" data-page="appointments" data-need="appointmentModal">🗓️ Schedule Appointment</button>
+          <button class="btn btn-action" data-page="patients" data-need="patientModal">➕ Add Patient</button>
+          <button class="btn btn-action" data-page="doctors" data-need="doctorModal">➕ Add Doctor</button>
+          <button class="btn btn-action" data-page="records" data-need="recordModal">📝 Create Medical Record</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patients -->
+    <div id="patients" class="page">
+      <div class="page-header"><h2>👤 Patient Management</h2><button class="btn btn-primary" data-open="patientModal">➕ Add New Patient</button></div>
+      <div class="search-bar"><input id="patientSearch" placeholder="Search patients by name or ID..."></div>
+      <table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Blood Group</th><th>Age</th><th>Address</th></tr></thead><tbody id="patientsList"></tbody></table>
+    </div>
+    <div id="patientModal" class="modal"><div class="modal-content">
+      <span class="close" data-close="patientModal">&times;</span><h2>Add New Patient</h2>
+      <form id="patientForm" class="form-grid">
+        <div class="form-group"><label>Full Name</label><input id="patientName" required></div>
+        <div class="form-group"><label>Email</label><input type="email" id="patientEmail" required></div>
+        <div class="form-group"><label>Phone</label><input type="tel" id="patientPhone" required></div>
+        <div class="form-group"><label>Date of Birth</label><input type="date" id="patientDOB" required></div>
+        <div class="form-group"><label>Gender</label><select id="patientGender" required><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+        <div class="form-group"><label>Blood Group</label><select id="patientBlood" required><option value="">Select Blood Group</option><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="form-group"><label>Address</label><textarea id="patientAddress" required></textarea></div>
+        <div class="form-group"><label>Emergency Contact</label><input id="patientEmergency" placeholder="Name & number" required></div>
+        <button class="btn btn-primary full">Add Patient</button>
+      </form>
+    </div></div>
+
+    <!-- Doctors -->
+    <div id="doctors" class="page">
+      <div class="page-header"><h2>👨‍⚕️ Doctor Management</h2><button class="btn btn-primary" data-open="doctorModal">➕ Add New Doctor</button></div>
+      <div class="filter-bar"><select id="departmentFilter"></select></div>
+      <div class="grid" id="doctorsList"></div>
+    </div>
+    <div id="doctorModal" class="modal"><div class="modal-content">
+      <span class="close" data-close="doctorModal">&times;</span><h2>Add New Doctor</h2>
+      <form id="doctorForm" class="form-grid">
+        <div class="form-group"><label>Full Name</label><input id="doctorName" required></div>
+        <div class="form-group"><label>Email</label><input type="email" id="doctorEmail" required></div>
+        <div class="form-group"><label>Phone</label><input type="tel" id="doctorPhone" required></div>
+        <div class="form-group"><label>Department</label><select id="doctorDept" required></select></div>
+        <div class="form-group"><label>Specialization</label><input id="doctorSpecialization" placeholder="e.g., Heart Surgery" required></div>
+        <div class="form-group"><label>Qualification</label><input id="doctorQualification" placeholder="e.g., MD, MS, DM" required></div>
+        <div class="form-group"><label>Experience (Years)</label><input type="number" id="doctorExperience" min="0" required></div>
+        <div class="form-group"><label>Consultation Fee</label><input type="number" id="doctorFee" min="0" step="0.01" required></div>
+        <button class="btn btn-primary full">Add Doctor</button>
+      </form>
+    </div></div>
+
+    <!-- Appointments -->
+    <div id="appointments" class="page">
+      <div class="page-header"><h2>📅 Appointment Management</h2><button class="btn btn-primary" data-open="appointmentModal">➕ Book Appointment</button></div>
+      <table class="data-table"><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date & Time</th><th>Reason</th><th>Status</th></tr></thead><tbody id="appointmentsList"></tbody></table>
+    </div>
+    <div id="appointmentModal" class="modal"><div class="modal-content">
+      <span class="close" data-close="appointmentModal">&times;</span><h2>Book Appointment</h2>
+      <form id="appointmentForm" class="form-grid">
+        <div class="form-group"><label>Patient</label><select id="appointmentPatient" required></select></div>
+        <div class="form-group"><label>Doctor</label><select id="appointmentDoctor" required></select></div>
+        <div class="form-group"><label>Date & Time</label><input type="datetime-local" id="appointmentDateTime" required></div>
+        <div class="form-group"><label>Reason for Visit</label><textarea id="appointmentReason" required></textarea></div>
+        <button class="btn btn-primary full">Book Appointment</button>
+      </form>
+    </div></div>
+
+    <!-- Departments -->
+    <div id="departments" class="page">
+      <div class="page-header"><h2>🏢 Departments</h2><button class="btn btn-primary" data-open="departmentModal">➕ Add Department</button></div>
+      <div class="grid" id="departmentsList"></div>
+    </div>
+    <div id="departmentModal" class="modal"><div class="modal-content">
+      <span class="close" data-close="departmentModal">&times;</span><h2>Add Department</h2>
+      <form id="departmentForm" class="form-grid">
+        <div class="form-group"><label>Department Name</label><input id="departmentName" required></div>
+        <div class="form-group"><label>Department Head</label><input id="departmentHead" required></div>
+        <div class="form-group"><label>Phone</label><input type="tel" id="departmentPhone" required></div>
+        <div class="form-group"><label>Description</label><textarea id="departmentDesc" required></textarea></div>
+        <button class="btn btn-primary full">Add Department</button>
+      </form>
+    </div></div>
+
+    <!-- Medical Records -->
+    <div id="records" class="page">
+      <div class="page-header"><h2>📋 Medical Records</h2><button class="btn btn-primary" data-open="recordModal">➕ Create Record</button></div>
+      <table class="data-table"><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Date</th></tr></thead><tbody id="recordsList"></tbody></table>
+    </div>
+    <div id="recordModal" class="modal"><div class="modal-content">
+      <span class="close" data-close="recordModal">&times;</span><h2>Create Medical Record</h2>
+      <form id="recordForm" class="form-grid">
+        <div class="form-group"><label>Patient</label><select id="recordPatient" required></select></div>
+        <div class="form-group"><label>Doctor</label><select id="recordDoctor" required></select></div>
+        <div class="form-group"><label>Symptoms</label><textarea id="recordSymptoms" required></textarea></div>
+        <div class="form-group"><label>Diagnosis</label><textarea id="recordDiagnosis" required></textarea></div>
+        <div class="form-group full"><label>Treatment</label><textarea id="recordTreatment" required></textarea></div>
+        <button class="btn btn-primary full">Create Record</button>
+      </form>
+    </div></div>
+
+    <!-- Medicines -->
+    <div id="medicines" class="page">
+      <div class="page-header"><h2>💊 Medicines & Inventory</h2><button class="btn btn-primary" data-open="medicineModal">➕ Add Medicine</button></div>
+      <table class="data-table"><thead><tr><th>ID</th><th>Medicine Name</th><th>Manufacturer</th><th>Price</th><th>Stock</th><th>Expiry Date</th></tr></thead><tbody id="medicinesList"></tbody></table>
+    </div>
+    <div id="medicineModal" class="modal"><div class="modal-content">
+      <span class="close" data-close="medicineModal">&times;</span><h2>Add Medicine</h2>
+      <form id="medicineForm" class="form-grid">
+        <div class="form-group"><label>Medicine Name</label><input id="medicineName" required></div>
+        <div class="form-group"><label>Manufacturer</label><input id="medicineManufacturer" required></div>
+        <div class="form-group"><label>Price</label><input type="number" id="medicinePrice" min="0" step="0.01" required></div>
+        <div class="form-group"><label>Stock Quantity</label><input type="number" id="medicineStock" min="0" required></div>
+        <div class="form-group"><label>Expiry Date</label><input type="date" id="medicineExpiry" required></div>
+        <button class="btn btn-primary full">Add Medicine</button>
+      </form>
+    </div></div>
+
+    <!-- Beds -->
+    <div id="beds" class="page">
+      <div class="page-header"><h2>🛏️ Beds & Rooms</h2><button class="btn btn-primary" data-open="bedModal">➕ Add Bed</button></div>
+      <table class="data-table"><thead><tr><th>ID</th><th>Room</th><th>Bed</th><th>Department</th><th>Status</th><th>Patient Admitted</th><th>Actions</th></tr></thead><tbody id="bedsList"></tbody></table>
+    </div>
+    <div id="bedModal" class="modal"><div class="modal-content">
+      <span class="close" data-close="bedModal">&times;</span><h2>Add Bed</h2>
+      <form id="bedForm" class="form-grid">
+        <div class="form-group"><label>Department</label><select id="bedDept" required></select></div>
+        <div class="form-group"><label>Room Number</label><input id="bedRoom" required></div>
+        <div class="form-group"><label>Bed Number</label><input id="bedNumber" required></div>
+        <button class="btn btn-primary full">Add Bed</button>
+      </form>
+    </div></div>
+  </main>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+# HMS — Hospital Management System
+
+HMS is a Hospital Management System developed as a college mini-project to simplify hospital operations and manage healthcare workflows.
+
+## Features
+
+- Patient Management
+- Doctor Management
+- Appointment Scheduling
+- Admin Authentication
+- Role-Based Access Control
+- REST API Development
+
+## Tech Stack
+
+- **Backend:** FastAPI (Python)
+- **ORM:** SQLAlchemy
+- **Database:** MySQL
+- **Server:** Uvicorn
+
+## Project Structure
+
+HMS/
+├── main.py
+├── create_admin.py
+├── static/
+├── templates/
+├── requirements.txt
+└── README.md
+
+## Installation and Setup
+
+### 1. Clone the Repository
+
+bash
+git clone <your-repository-url>
+cd HMS
+
+
+### 2. Create a Virtual Environment
+
+bash
+python3 -m venv .venv
+source .venv/bin/activate
+
+
+### 3. Install Dependencies
+
+bash
+pip install -r requirements.txt
+
+
+### 4. Configure the Database
+
+Configure your MySQL database connection and required environment variables according to your project configuration.
+
+### 5. Run the Application
+
+bash
+uvicorn main:app --reload
+
+
+Open `http://127.0.0.1:8000` in your browser.
+
+API documentation is available at `http://127.0.0.1:8000/docs` when enabled.
+
+## Project Purpose
+
+This project demonstrates practical implementation of backend development, database integration, REST APIs, authentication, and hospital management workflows.
+
+## Developer
+
+**Veekesh Singh**
+
+
