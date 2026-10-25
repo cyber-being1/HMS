@@ -58,6 +58,8 @@ Configure your MySQL database connection and required environment variables acco
 
 bash
 uvicorn main:app --reload
+OR
+python main.py
 
 
 Open `http://127.0.0.1:8000` in your browser.
